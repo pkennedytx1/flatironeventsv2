@@ -26,10 +26,10 @@ class App extends React.Component {
 
     return (
       <div className="App">
-        <Navagation />
+        <Navagation user={user} signOut={signOut}/>
         {
           user
-            ? <Button cariant='primary' onClick={signOut}>Sign out</Button>
+            ? null
             : <Login signInWithGoogle={signInWithGoogle} />
         }
       </div>
