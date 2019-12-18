@@ -8,6 +8,7 @@ import withFirebaseAuth from 'react-with-firebase-auth'
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import firebaseConfig from './base';
+import EventCreate from './components/EventCreate'
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
@@ -24,12 +25,14 @@ class App extends React.Component {
       signInWithGoogle,
     } = this.props;
 
+    console.log(user)
+
     return (
       <div className="App">
         <Navagation user={user} signOut={signOut}/>
         {
           user
-            ? null
+            ? <EventCreate />
             : <Login signInWithGoogle={signInWithGoogle} />
         }
       </div>
