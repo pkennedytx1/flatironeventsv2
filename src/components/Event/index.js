@@ -1,15 +1,17 @@
 import React from 'react'
-import { Dropdown, Form, Button } from 'react-bootstrap'
-import { thisExpression } from '@babel/types'
+import { Form, Button } from 'react-bootstrap'
+import moment from 'moment'
 
 class Event extends React.Component {
     constructor() {
         super() 
         this.state = {
             campus: 'Please Select A Campus',
-            campusArray: ['Austin', 'Houston'],
+            campusArray: ['Austin', 'Houston', 'Atlanta', 'Seatle'],
             rememberLocation: false,
-            eventName: ''
+            eventName: '',
+            error: {},
+            date: ''
         }
     }
 
@@ -28,7 +30,7 @@ class Event extends React.Component {
         })
     }
 
-    handleChenge = () => {
+    handleChenge = (e) => {
         this.setState({
             eventName: e.target.value
         })
@@ -39,9 +41,27 @@ class Event extends React.Component {
     }
 
     handleEventCreate = (e) => {
+        e.preventDefault()
+        this.handleErrors()
+        this.setState({ date: moment().subtract(10, 'days').calendar()})
         if (this.state.rememberLocation) {
             localStorage.setItem('location', this.state.campus)
-        } 
+        } else {
+            localStorage.removeItem('location')
+        }
+    }
+
+    handleErrors = () => {
+        let error = {}
+        if (this.state.campus === 'Please Select A Campus') {
+            error.campus = 'You Must Select A Campus'
+        }
+        if(this.state.eventName === '') {
+            error.event = 'Input Cannot Be Empty'
+        }
+        this.setState({
+            error
+        })
     }
 
     render() {
@@ -51,19 +71,25 @@ class Event extends React.Component {
                 <h1 style={{margin: '20px auto'}}>Create Event</h1>
                 <Form.Group controlId="formGridState">
                     <Form.Label>Please Select A Campus</Form.Label>
-                    <Form.Control onChange={this.handleSelectChange} as="select">
+                    <Form.Control isInvalid={this.state.error.campus} onChange={this.handleSelectChange} as="select">
                         <option value={this.state.campus}>{this.state.campus}</option>
                         {this.state.campusArray.map((location, i) => {
                            return <option value={location} key={i}>{location}</option>
                         })}
                     </Form.Control>
+                    <Form.Control.Feedback type='invalid'>
+                        {this.state.error.campus}
+                    </Form.Control.Feedback >
                 </Form.Group>
                 <Form.Group controlId="formBasicPassword">
                     <Form.Label>Event Name</Form.Label>
-                    <Form.Control type="eventName" placeholder="Event Name" />
+                    <Form.Control isInvalid={this.state.error.event} type="eventName" placeholder="Event Name" />
+                    <Form.Control.Feedback type='invalid'>
+                        {this.state.error.event}
+                    </Form.Control.Feedback >
                 </Form.Group>
                 <Form.Group controlId="formBasicCheckbox">
-                    <Form.Check checked={this.state.rememberLocation} onChange={this.handleCheckChange} defaultChecked={this.state.rememberLocation} type="checkbox" label="Remeber My Campus" />
+                    <Form.Check checked={this.state.rememberLocation} onChange={this.handleCheckChange} type="checkbox" label="Remeber My Campus" />
                 </Form.Group>
                 <Button block variant="primary" type="submit">
                     Create Event
