@@ -25,14 +25,12 @@ class App extends React.Component {
       signInWithGoogle,
     } = this.props;
 
-    console.log(user)
-
     return (
       <div className="App">
         <Navagation user={user} signOut={signOut}/>
         {
           user
-            ? <EventCreate />
+            ? (<EventCreate user={user} />)
             : <Login signInWithGoogle={signInWithGoogle} />
         }
       </div>
