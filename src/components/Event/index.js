@@ -1,5 +1,6 @@
 import React from 'react'
 import { Dropdown, Form, Button } from 'react-bootstrap'
+import { thisExpression } from '@babel/types'
 
 class Event extends React.Component {
     constructor() {
@@ -8,6 +9,7 @@ class Event extends React.Component {
             campus: 'Please Select A Campus',
             campusArray: ['Austin', 'Houston'],
             rememberLocation: false,
+            eventName: ''
         }
     }
 
@@ -23,6 +25,12 @@ class Event extends React.Component {
     handleSelectChange = (e) => {
         this.setState({
             campus: e.target.value
+        })
+    }
+
+    handleChenge = () => {
+        this.setState({
+            eventName: e.target.value
         })
     }
 
