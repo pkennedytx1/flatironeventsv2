@@ -1,10 +1,21 @@
 import React from 'react'
+import Event from '../Event'
 
 class EventCreate extends React.Component {
     render() {
-        console.log("am I rendering")
+        let user;
+        if(this.props.user) {
+            user = this.props.user.email.split('@')
+        }
+        
         return(
-            <h1>Hello</h1>
+            <div>
+                {user[1] === 'flatironschool.com' ?
+                <Event />
+                :
+                <h1 style={{textAlign: 'center', margin: '20px'}}>Please login with a valid <b>//Flatiron</b> email.</h1>
+                }
+            </div>
         )
     }
 }
