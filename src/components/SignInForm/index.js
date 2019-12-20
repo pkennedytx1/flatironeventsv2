@@ -42,10 +42,20 @@ class SignInForm extends React.Component {
             clearInterval(start)
             this.setState({ signIn: false })
         }, 5000)
+        this.setState({
+            now: 100,
+            firstName: '',
+            lastName: '',
+            fullName: '',
+            email: ''
+        })
     }
 
     handleTimer = () => {setTimeout(() => {
-        this.setState({ signIn: false })
+        this.setState({ 
+            signIn: false,
+        })
+
     }, 5000)}
 
 
@@ -55,7 +65,7 @@ class SignInForm extends React.Component {
             <div>
             {this.state.signIn
             ?
-            <div>
+            <div style={{maxWidth: '400px', margin: '0 auto'}}>
                 <h1>Sign In Successful, Welcome!</h1>
                 <ProgressBar now={this.state.now} />
             </div>
