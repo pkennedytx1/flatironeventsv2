@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Col, Button, ProgressBar } from 'react-bootstrap'
+import { Form, Col, Button, ProgressBar, Toast } from 'react-bootstrap'
 
 class SignInForm extends React.Component {
     constructor() {
@@ -11,7 +11,9 @@ class SignInForm extends React.Component {
             fullName: '',
             email: '',
             signIn: false,
-            now: 100
+            now: 100,
+            error: {},
+            noErrors: false
         }
     }
     
@@ -31,24 +33,27 @@ class SignInForm extends React.Component {
 
     handleSigninAction = (e) => {
         e.preventDefault()
-        let fullName
-        fullName = `${this.state.firstName.trim().charAt(0).toUpperCase()}${this.state.firstName.trim().slice(1)} ${this.state.lastName.trim().charAt(0).toUpperCase()}${this.state.lastName.trim().slice(1)}`
-        this.setState({ 
-            fullName,
-            signIn: true
-        })
-        let start = setInterval(() => this.setState({ now: this.state.now -  1}), 50)
-        setTimeout(() => {
-            clearInterval(start)
-            this.setState({ signIn: false })
-        }, 5000)
-        this.setState({
-            now: 100,
-            firstName: '',
-            lastName: '',
-            fullName: '',
-            email: ''
-        })
+        this.handleError()
+        if (this.state.noErrors) {
+            let fullName
+            fullName = `${this.state.firstName.trim().charAt(0).toUpperCase()}${this.state.firstName.trim().slice(1)} ${this.state.lastName.trim().charAt(0).toUpperCase()}${this.state.lastName.trim().slice(1)}`
+            this.setState({ 
+                fullName,
+                signIn: true
+            })
+            let start = setInterval(() => this.setState({ now: this.state.now -  1}), 50)
+            setTimeout(() => {
+                clearInterval(start)
+                this.setState({ signIn: false })
+            }, 5000)
+            this.setState({
+                now: 100,
+                firstName: '',
+                lastName: '',
+                fullName: '',
+                email: ''
+            })
+        }
     }
 
     handleTimer = () => {setTimeout(() => {
@@ -58,6 +63,23 @@ class SignInForm extends React.Component {
 
     }, 5000)}
 
+    handleError = () => {
+        let error = {}
+        let emptyError = 'This field Cannot Be Empty'
+        if (this.state.firstName === '') {
+            error.firstName = emptyError
+        }
+        if (this.state.lastName === '') {
+            error.lastName = emptyError
+        }
+        if (this.state.email === '') {
+            error.email = emptyError
+        }
+        this.setState({ error })
+        if (this.state.email !== '' && this.state.lastName !== '' && this.state.firstName !== '') {
+            this.setState({ noErrors: true })
+        }
+    }
 
     render() {
         console.log(this.state.fullName)
@@ -66,7 +88,7 @@ class SignInForm extends React.Component {
             {this.state.signIn
             ?
             <div style={{maxWidth: '400px', margin: '0 auto'}}>
-                <h1>Sign In Successful, Welcome!</h1>
+                <h1>Sign In Successful, Welcome to //Flatiron {this.state.firstName}!</h1>
                 <ProgressBar now={this.state.now} />
             </div>
             :
@@ -74,19 +96,31 @@ class SignInForm extends React.Component {
                 <h1 style={{textAlign: 'center'}} >{this.props.eventName}</h1>
                 <Form.Row style={{marginTop: '20px'}}>
                     <Col>
-                        <Form.Control onChange={this.handleChange} name='firstName' value={this.state.firstName} placeholder="First name" />
+                        <Form.Control isInvalid={this.state.error.firstName} onChange={this.handleChange} name='firstName' value={this.state.firstName} placeholder="First name" />
+                        <Form.Control.Feedback type='invalid'>
+                            {this.state.error.firstName}
+                        </Form.Control.Feedback >
                     </Col>
                     <Col>
-                        <Form.Control onChange={this.handleChange} name='lastName' value={this.state.lastName} placeholder="Last name" />
+                        <Form.Control isInvalid={this.state.error.lastName} onChange={this.handleChange} name='lastName' value={this.state.lastName} placeholder="Last name" />
+                        <Form.Control.Feedback type='invalid'>
+                            {this.state.error.lastName}
+                        </Form.Control.Feedback >
                     </Col>
                 </Form.Row>
                 <Form.Row style={{marginTop: '20px'}}>
                     <Col>
                     <Form.Group controlId="formBasicEmail">
-                        <Form.Control onChange={this.handleChange} name='email' value={this.state.email} type="email" placeholder="Enter email" />
-                        <Form.Text className="text-muted">
-                            We will never share your email with anoyone.
-                        </Form.Text>
+                        <Form.Control isInvalid={this.state.error.email} onChange={this.handleChange} name='email' value={this.state.email} type="email" placeholder="Enter email" />
+                        {
+                            this.state.error.email ?
+                            <Form.Control.Feedback type='invalid'>
+                                {this.state.error.email}
+                            </Form.Control.Feedback > :
+                            <Form.Text className="text-muted">
+                                We will never share your email with anoyone.
+                            </Form.Text>
+                        }
                     </Form.Group>
                     </Col>
                 </Form.Row>
