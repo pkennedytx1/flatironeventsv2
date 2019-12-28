@@ -51,7 +51,8 @@ class SignInForm extends React.Component {
                 firstName: '',
                 lastName: '',
                 fullName: '',
-                email: ''
+                email: '',
+                noErrors: false
             })
         }
     }
@@ -82,9 +83,8 @@ class SignInForm extends React.Component {
     }
 
     render() {
-        console.log(this.state.fullName)
         return(
-            <div>
+            <div style={{ margin: '40px auto'}}>
             {this.state.signIn
             ?
             <div style={{maxWidth: '400px', margin: '0 auto'}}>
