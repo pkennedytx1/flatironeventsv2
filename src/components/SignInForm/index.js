@@ -30,11 +30,12 @@ class SignInForm extends React.Component {
     handleChange = (e) => {
         this.setState({ [e.target.name]: e.target.value})
     }
-
+    
     handleSigninAction = (e) => {
         e.preventDefault()
         this.handleError()
         if (this.state.noErrors) {
+            console.log('hello')
             let fullName
             fullName = `${this.state.firstName.trim().charAt(0).toUpperCase()}${this.state.firstName.trim().slice(1)} ${this.state.lastName.trim().charAt(0).toUpperCase()}${this.state.lastName.trim().slice(1)}`
             this.setState({ 
@@ -83,12 +84,14 @@ class SignInForm extends React.Component {
     }
 
     render() {
+        let name = this.state.fullName
+        console.log(name)
         return(
             <div style={{ margin: '40px auto'}}>
             {this.state.signIn
             ?
             <div style={{maxWidth: '400px', margin: '0 auto'}}>
-                <h1>Sign In Successful, Welcome to //Flatiron {this.state.firstName}!</h1>
+                <h1>Sign In Successful, Welcome to Flatiron!</h1>
                 <ProgressBar now={this.state.now} />
             </div>
             :
