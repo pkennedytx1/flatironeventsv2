@@ -2,12 +2,14 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navagation from './components/Navbar'
 import Login from './components/Login'
-import { Router, Route, Redirect } from 'react-router-dom'
+import Data from './components/Data'
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
 import { Button } from 'react-bootstrap'
 import withFirebaseAuth from 'react-with-firebase-auth'
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import firebaseConfig from './base';
+// import { Router, Route, Switch } from 'react-router'
 import EventCreate from './components/EventCreate'
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -26,14 +28,27 @@ class App extends React.Component {
     } = this.props;
 
     return (
+      <Router>
       <div className="App">
         <Navagation user={user} signOut={signOut}/>
         {
           user
-            ? (<EventCreate user={user} />)
-            : <Login signInWithGoogle={signInWithGoogle} />
-        }
+            ?
+            <div>
+              <Route path='/new'>
+                <EventCreate user={user} />
+              </Route>
+              <Route path='/'>
+                <Data />
+              </Route>
+            </div>
+             :
+            <Route exact path='/'>
+              <Login signInWithGoogle={signInWithGoogle} />
+            </Route> 
+          }
       </div>
+      </Router>
     );
   }
 }

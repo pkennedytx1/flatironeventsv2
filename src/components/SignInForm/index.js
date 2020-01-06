@@ -1,4 +1,7 @@
 import React from 'react'
+import firebase from 'firebase'
+import shortid from 'shortid'
+import './style.css'
 import { Form, Col, Button, ProgressBar, Toast } from 'react-bootstrap'
 
 class SignInForm extends React.Component {
@@ -16,7 +19,6 @@ class SignInForm extends React.Component {
             noErrors: false
         }
     }
-    
     
     componentDidMount() {
         let event = {
@@ -42,6 +44,7 @@ class SignInForm extends React.Component {
                 fullName,
                 signIn: true
             })
+            this.writeAttendace()
             let start = setInterval(() => this.setState({ now: this.state.now -  1}), 50)
             setTimeout(() => {
                 clearInterval(start)
@@ -81,6 +84,17 @@ class SignInForm extends React.Component {
         if (this.state.email !== '' && this.state.lastName !== '' && this.state.firstName !== '') {
             this.setState({ noErrors: true })
         }
+    }
+
+    writeAttendace = () => {
+        let id = shortid.generate()
+        firebase.database().ref('/event_attendance/' + id).set(
+            {
+                event: this.state.event,
+                name: `${this.state.firstName.trim().charAt(0).toUpperCase()}${this.state.firstName.trim().slice(1)} ${this.state.lastName.trim().charAt(0).toUpperCase()}${this.state.lastName.trim().slice(1)}`,
+                email: this.state.email
+            }
+        )
     }
 
     render() {
