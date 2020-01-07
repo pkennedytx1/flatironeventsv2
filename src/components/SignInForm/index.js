@@ -13,6 +13,7 @@ class SignInForm extends React.Component {
             lastName: '',
             fullName: '',
             email: '',
+            category: 'Please Choose a Category',
             signIn: false,
             now: 100,
             error: {},
@@ -20,13 +21,48 @@ class SignInForm extends React.Component {
         }
     }
     
-    componentDidMount() {
+    async componentDidMount() {
         let event = {
             name: this.props.eventName,
             date: this.props.date,
             campus: this.props.campus
         }
         this.setState({ event })
+        await this.handleClientLoad();
+    }
+
+    handleClientLoad = async () => {
+        // Signal Google that we want to use Google authorization (Initializing the Google API authorization)
+        await window.gapi.load('client: auth2', this.initClient);
+    }
+    
+    initClient = () => {
+        // Passing in all of our API credentials (from Google developer console) to Google. (By this, Google allows us authorization to store data in our sheet)
+        window.gapi.client.init({
+            'apiKey': process.env.REACT_APP_SHEETS_API_KEY,
+            'clientId': process.env.REACT_APP_CLIENT_ID,
+            'scope': process.env.REACT_APP_SCOPE,
+            'discoveryDocs': ['https://sheets.googleapis.com/$discovery/rest?version=v4']
+        }).then(() => {
+            // Listen for sign-in state changes.
+            window.gapi.auth2.getAuthInstance().isSignedIn.listen(this.updateSignInStatus)
+
+            // Handle the initial sign-in state.
+            this.updateSignInStatus(window.gapi.auth2.getAuthInstance().isSignedIn.get())
+
+            // Sign in user.
+            window.gapi.auth2.getAuthInstance().signIn()
+        })
+    }
+
+    updateSignInStatus = (isSignedIn) => {
+        if(isSignedIn) {
+            // alert("Welcome Flatiron Staff!")
+            console.log(isSignedIn)
+            this.setState({ successfulLogin: true })
+        } else {
+            alert("Something not right")
+        }
     }
     
     handleChange = (e) => {
@@ -44,7 +80,8 @@ class SignInForm extends React.Component {
                 fullName,
                 signIn: true
             })
-            this.writeAttendace()
+            // this.writeAttendace()
+            this.handleSheetAddition(e)
             let start = setInterval(() => this.setState({ now: this.state.now -  1}), 50)
             setTimeout(() => {
                 clearInterval(start)
@@ -80,21 +117,59 @@ class SignInForm extends React.Component {
         if (this.state.email === '') {
             error.email = emptyError
         }
+        if (this.state.category === 'Please Choose a Category') {
+            error.category = emptyError
+        }
         this.setState({ error })
         if (this.state.email !== '' && this.state.lastName !== '' && this.state.firstName !== '') {
             this.setState({ noErrors: true })
         }
     }
 
-    writeAttendace = () => {
-        let id = shortid.generate()
-        firebase.database().ref('/event_attendance/' + id).set(
-            {
-                event: this.state.event,
-                name: `${this.state.firstName.trim().charAt(0).toUpperCase()}${this.state.firstName.trim().slice(1)} ${this.state.lastName.trim().charAt(0).toUpperCase()}${this.state.lastName.trim().slice(1)}`,
-                email: this.state.email
-            }
-        )
+    handleSelect = (e) => {
+        this.setState({ category: e.target.value})
+    }
+
+    // writeAttendace = () => {
+    //     let id = shortid.generate()
+    //     firebase.database().ref('/event_attendance/' + id).set(
+    //         {
+    //             event: this.state.event,
+    //             name: `${this.state.firstName.trim().charAt(0).toUpperCase()}${this.state.firstName.trim().slice(1)} ${this.state.lastName.trim().charAt(0).toUpperCase()}${this.state.lastName.trim().slice(1)}`,
+    //             email: this.state.email
+    //         }
+    //     )
+    // }
+
+    handleSheetAddition = async (e) => {
+        e.preventDefault()
+        
+        let submissionValues = Object.values(this.state)
+        submissionValues = [ this.state.event.name, this.state.event.campus, this.state.firstName, this.state.lastName, this.state.email, this.state.event.date, this.state.category]
+
+        const params = {
+            spreadsheetId: process.env.REACT_APP_SPREADSHEET_ID,
+            range: 'Sheet1',
+            valueInputOption: 'RAW',
+            insertDataOption: 'INSERT_ROWS'
+        }
+        console.log(submissionValues)
+        const valueRangeBody = {
+            'majorDimension': 'ROWS',
+            'values': [submissionValues] //Needs to be a 2d array
+        }
+
+        // Request to just talk to Google
+        let request = window.gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody)
+        request.then(function (response) {
+            // TODO: Insert desired response behaviour on submission
+            // Edwin's comment: Should refresh the form right after submit has been clicked by previous checkin user.
+            console.log(response.result)
+        }, function (reason) {
+            console.error('error: ' + reason.result.error.message)
+        })
+
+        this.setState({ showConfirmation: true })
     }
 
     render() {
@@ -138,6 +213,22 @@ class SignInForm extends React.Component {
                                 We will never share your email with anoyone.
                             </Form.Text>
                         }
+                    </Form.Group>
+                    </Col>
+                </Form.Row>
+                <Form.Row>
+                    <Col>
+                    <Form.Group>
+                        <Form.Control isInvalid={this.state.error.category} as="select" value={this.state.category} onChange={this.handleSelect}>
+                            <option value='Please Choose a Category'>Please Choose a Category</option>
+                            <option value='Prospective Student'>Prospective Student</option>
+                            <option value='Current Flatiron Student'>Current Flatiron Student</option>
+                            <option value='Flatiron Alumni'>Flatiron Alumni</option>
+                            <option value='Other'>Other</option>
+                        </Form.Control>
+                        <Form.Control.Feedback type='invalid'>
+                            {this.state.error.category}
+                        </Form.Control.Feedback >
                     </Form.Group>
                     </Col>
                 </Form.Row>
