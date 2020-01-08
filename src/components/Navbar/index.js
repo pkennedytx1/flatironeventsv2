@@ -9,8 +9,6 @@ class Navagation extends React.Component {
                 <Nav className="ml-auto">
                     {this.props.user ?
                         <>
-                        <Nav.Link>Event Data</Nav.Link>
-                        <Nav.Link>New Event</Nav.Link>
                         <Nav.Link onClick={this.props.signOut}>Log Out</Nav.Link>
                         </>
                     :
