@@ -1,5 +1,6 @@
 import React from 'react'
 import firebase from 'firebase'
+
 import shortid from 'shortid'
 import './style.css'
 import { Form, Col, Button, ProgressBar, Toast } from 'react-bootstrap'
@@ -81,7 +82,11 @@ class SignInForm extends React.Component {
                 signIn: true
             })
             // this.writeAttendace()
-            this.handleSheetAddition(e)
+            // this.handleSheetAddition(e)
+            fetch('https://us-central1-flatironevents-49b92.cloudfunctions.net/onSignIn', {
+                method: 'POST',
+                body: JSON.stringify(this.state)
+            }).then(res => res.json()).then(data => console.log(data))
             let start = setInterval(() => this.setState({ now: this.state.now -  1}), 50)
             setTimeout(() => {
                 clearInterval(start)
