@@ -1,11 +1,14 @@
 const functions = require('firebase-functions');
 const cors = require('cors')({ origin: true })
+const admin = require('firebase-admin')
 const {google} = require('googleapis')
+
+admin.initializeApp()
 
 exports.onSignIn = functions.https.onRequest((req, res) => {
     cors(req, res, () => {
+        let data = req.body
         var jwt = getJwt();
-        // var apiKey = getApiKey();
         var apiKey = getApiKey()
         var spreadsheetId = '1bJqnfZGA1x1r5ZDE9Lb5yQl9_0c4A3Fy3h5hMPtOr-c';
         var range = 'A1';
@@ -13,7 +16,7 @@ exports.onSignIn = functions.https.onRequest((req, res) => {
         appendSheetRow(jwt, apiKey, spreadsheetId, range, row);
 
         res.status(200).json({
-            message: 'It worked'
+            message: data
         })
     })
 })
