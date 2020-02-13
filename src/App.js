@@ -16,6 +16,8 @@ const providers = {
   googleProvider: new firebase.auth.GoogleAuthProvider(),
 };
 
+providers.googleProvider.addScope('https://www.googleapis.com/auth/spreadsheets')
+
 class App extends React.Component {
   render() {
     const {

@@ -1,5 +1,6 @@
 import React from 'react'
 import firebase from 'firebase'
+import axios from 'axios'
 
 import shortid from 'shortid'
 import './style.css'
@@ -34,26 +35,7 @@ class SignInForm extends React.Component {
 
     handleClientLoad = async () => {
         // Signal Google that we want to use Google authorization (Initializing the Google API authorization)
-        await window.gapi.load('client: auth2', this.initClient);
-    }
-    
-    initClient = () => {
-        // Passing in all of our API credentials (from Google developer console) to Google. (By this, Google allows us authorization to store data in our sheet)
-        window.gapi.client.init({
-            'apiKey': process.env.REACT_APP_SHEETS_API_KEY,
-            'clientId': process.env.REACT_APP_CLIENT_ID,
-            'scope': process.env.REACT_APP_SCOPE,
-            'discoveryDocs': ['https://sheets.googleapis.com/$discovery/rest?version=v4']
-        }).then(() => {
-            // Listen for sign-in state changes.
-            window.gapi.auth2.getAuthInstance().isSignedIn.listen(this.updateSignInStatus)
-
-            // Handle the initial sign-in state.
-            this.updateSignInStatus(window.gapi.auth2.getAuthInstance().isSignedIn.get())
-
-            // Sign in user.
-            window.gapi.auth2.getAuthInstance().signIn()
-        })
+        await window.gapi.load('client: auth2', firebase.auth().currentUser.getIdToken());
     }
 
     updateSignInStatus = (isSignedIn) => {
@@ -74,7 +56,6 @@ class SignInForm extends React.Component {
         e.preventDefault()
         this.handleError()
         if (this.state.noErrors) {
-            console.log('hello')
             let fullName
             fullName = `${this.state.firstName.trim().charAt(0).toUpperCase()}${this.state.firstName.trim().slice(1)} ${this.state.lastName.trim().charAt(0).toUpperCase()}${this.state.lastName.trim().slice(1)}`
             this.setState({ 
@@ -83,10 +64,9 @@ class SignInForm extends React.Component {
             })
             // this.writeAttendace()
             // this.handleSheetAddition(e)
-            fetch('https://us-central1-flatironevents-49b92.cloudfunctions.net/onSignIn', {
-                method: 'POST',
-                body: JSON.stringify(this.state)
-            }).then(res => res.json()).then(data => console.log(data))
+            axios.post('https://us-central1-flatironevents-49b92.cloudfunctions.net/onSignIn', 
+                { data: this.state }, { headers: {"Access-Control-Allow-Origin": "*"} }
+            ).then(data => console.log(data))
             let start = setInterval(() => this.setState({ now: this.state.now -  1}), 50)
             setTimeout(() => {
                 clearInterval(start)
@@ -134,17 +114,6 @@ class SignInForm extends React.Component {
     handleSelect = (e) => {
         this.setState({ category: e.target.value})
     }
-
-    // writeAttendace = () => {
-    //     let id = shortid.generate()
-    //     firebase.database().ref('/event_attendance/' + id).set(
-    //         {
-    //             event: this.state.event,
-    //             name: `${this.state.firstName.trim().charAt(0).toUpperCase()}${this.state.firstName.trim().slice(1)} ${this.state.lastName.trim().charAt(0).toUpperCase()}${this.state.lastName.trim().slice(1)}`,
-    //             email: this.state.email
-    //         }
-    //     )
-    // }
 
     handleSheetAddition = async (e) => {
         e.preventDefault()
