@@ -7,16 +7,18 @@ admin.initializeApp()
 
 exports.onSignIn = functions.https.onRequest((req, res) => {
     cors(req, res, () => {
-        let data = req.body
+        console.log(req.body.data)
+        let firstName = req.body.data.firstName
         var jwt = getJwt();
         var apiKey = getApiKey()
         var spreadsheetId = '1bJqnfZGA1x1r5ZDE9Lb5yQl9_0c4A3Fy3h5hMPtOr-c';
         var range = 'A1';
-        var row = ['hello'];
+        var row = [`${req.body.data.event.name}`]
+        // var row = [`${data.event.name}`, `${data.event.campus}`, `${data.firstName}`, `${data.lastName}`, `${data.email}`, `${data.event.campus}`, `${data.category}`];
         appendSheetRow(jwt, apiKey, spreadsheetId, range, row);
 
         res.status(200).json({
-            message: data
+            sentData: `${firstName}`
         })
     })
 })

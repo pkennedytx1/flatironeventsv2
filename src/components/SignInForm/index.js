@@ -65,7 +65,7 @@ class SignInForm extends React.Component {
             // this.writeAttendace()
             // this.handleSheetAddition(e)
             axios.post('https://us-central1-flatironevents-49b92.cloudfunctions.net/onSignIn', 
-                { data: this.state }
+                { data: this.state }, { headers: {"Access-Control-Allow-Origin": "*"} }
             ).then(data => console.log(data))
             let start = setInterval(() => this.setState({ now: this.state.now -  1}), 50)
             setTimeout(() => {
