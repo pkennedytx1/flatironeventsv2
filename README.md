@@ -1,3 +1,1 @@
-#Flatiron Event Tracker
 
-##Overview
