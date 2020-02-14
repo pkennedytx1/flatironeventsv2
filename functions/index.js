@@ -13,7 +13,7 @@ exports.onSignIn = functions.https.onRequest((req, res) => {
         var apiKey = getApiKey()
         var spreadsheetId = '1bJqnfZGA1x1r5ZDE9Lb5yQl9_0c4A3Fy3h5hMPtOr-c';
         var range = 'A1';
-        var row = [`${req.body.data.event.name}`]
+        var row = [`${req.body.data.event.name}`, `${req.body.data.event.campus}`, `${req.body.data.firstName}`, `${req.body.data.lastName}`, `${req.body.data.email}`, `${req.body.data.event.date}`, `${req.body.data.category}`]
         // var row = [`${data.event.name}`, `${data.event.campus}`, `${data.firstName}`, `${data.lastName}`, `${data.email}`, `${data.event.campus}`, `${data.category}`];
         appendSheetRow(jwt, apiKey, spreadsheetId, range, row);
 
