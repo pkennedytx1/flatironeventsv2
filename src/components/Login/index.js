@@ -10,7 +10,7 @@ class Login extends React.Component {
                 <Form>
                     <br />
                     <br />
-                    <h1 style={{textAlign: 'center'}}>Event Signin Login</h1>
+                    <h1 style={{textAlign: 'center'}}>Event Tracker Login</h1>
                     <br />
                     <Row>
                         <Col>
@@ -29,13 +29,20 @@ class Login extends React.Component {
                             <br />
                             <h6>2. Create a new event.</h6>
                             <br />
-                            <h6>3. You will be asked to verify a google account that has <b>write access</b> to the google sheet.</h6>
+                            <h6>3. Use the link below to go to the sheet and <b>ask for write permission</b> if you don't already.</h6>
                             <br />
-                            <h6>4. Use the link below to go to the sheet and ask for permission if you don't already.</h6>
-                            <br />
-                            <h6>5. Enjoy your event <span>🥳</span></h6>
+                            <h6>4. Enjoy your event <span>🥳</span></h6>
                             <br />
                             <b><a target='_blank' href='https://docs.google.com/spreadsheets/d/1bJqnfZGA1x1r5ZDE9Lb5yQl9_0c4A3Fy3h5hMPtOr-c/edit#gid=0'><span>📑</span> Event Signin Sheet</a></b>
+                            <br />
+                        </Col>
+                    </Row>
+                    <br />
+                    <hr />
+                    <Row>
+                        <Col>
+                            <p style={{ textAlign: 'center' }}>Made with ❤️ by <b>Flatiron Austin</b>&nbsp;&nbsp;|&nbsp;&nbsp;
+                            <a style={{ color: 'black' }} target='_blank' href='https://github.com/pkennedytx1/flatironeventsv2'><i class="fab fa-github"></i></a></p>
                         </Col>
                     </Row>
                 </Form>
